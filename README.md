@@ -17,12 +17,17 @@ Simple tool to analyze user engagement from chatbot interaction data.
 
 1. **Install dependencies:**
 ```bash
-pip install pandas
+pip install -r requirements.txt
 ```
 
-2. **Run analysis:**
+2. **Run analysis (super simple - no arguments needed!):**
 ```bash
-python main.py --input sample_data.csv
+python main.py
+```
+
+**Or with custom data:**
+```bash
+python main.py --input your_data.csv --output results/
 ```
 
 3. **View results:**
@@ -54,6 +59,8 @@ Your CSV needs these columns:
 ## Example Output
 
 ```
+python main.py
+
 🚀 Starting User Engagement Analysis...
 📊 Processing data...
 ✅ Processed 20 interactions from 5 users

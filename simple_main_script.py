@@ -15,8 +15,9 @@ from html_generator import HTMLGenerator
 
 def main():
     parser = argparse.ArgumentParser(description='User Engagement Analysis')
-    parser.add_argument('--input', required=True, help='Input CSV file')
-    parser.add_argument('--output', default='output', help='Output directory')
+    parser.add_argument('--input', default='sample_data.csv',
+                        help='Input CSV file (default: sample_data_file.csv)')
+    parser.add_argument('--output', default='output', help='Output directory (default: output)')
 
     args = parser.parse_args()
 
