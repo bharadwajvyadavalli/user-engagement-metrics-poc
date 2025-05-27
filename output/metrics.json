@@ -1,0 +1,38 @@
+{
+  "avg_dau": 2.6666666666666665,
+  "dau_data": {
+    "2024-01-01": 2,
+    "2024-01-02": 3,
+    "2024-01-03": 3
+  },
+  "avg_mau": 5.0,
+  "mau_data": {
+    "2024-01": 5
+  },
+  "session_durations": [
+    1.5,
+    0.25,
+    0.3333333333333333,
+    0.16666666666666666,
+    0.5,
+    1.0,
+    0.75,
+    0.3333333333333333
+  ],
+  "avg_session_duration": 0.6041666666666666,
+  "avg_sessions_per_user": 1.8,
+  "avg_queries_per_session": 1.2222222222222223,
+  "feature_usage": {
+    "search": 4,
+    "analysis": 4,
+    "export": 2,
+    "chat": 2,
+    "help": 5
+  },
+  "retention_rates": {
+    "1_day": 0.4,
+    "7_day": 0.0,
+    "30_day": 0.0
+  },
+  "churn_rate": 0.0
+}

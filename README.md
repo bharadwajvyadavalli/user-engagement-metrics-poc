@@ -1,49 +1,81 @@
-# User Engagement Metrics POC
+# User Engagement Analytics
 
-Simple proof-of-concept for analyzing user engagement from chatbot interaction data.
+Simple tool to analyze user engagement from chatbot interaction data.
+
+## What it calculates
+
+- **Daily Active Users (DAU)** - Unique users per day
+- **Monthly Active Users (MAU)** - Unique users per month  
+- **Session Duration** - How long users stay engaged
+- **Session Frequency** - How many sessions per user
+- **Queries per Session** - Questions asked per conversation
+- **Feature Usage** - Which features users engage with most
+- **Retention Rate** - Users who return after 1, 7, 30 days
+- **Churn Rate** - Users who stopped using the system
 
 ## Quick Start
 
-1. Install dependencies:
+1. **Install dependencies:**
 ```bash
-pip install -r requirements.txt
+pip install pandas
 ```
 
-2. Run analysis:
+2. **Run analysis:**
 ```bash
 python main.py --input sample_data.csv
 ```
 
+3. **View results:**
+- Check console output for key metrics
+- Open `output/metrics.json` for detailed data
+- Open `output/summary.csv` for spreadsheet format
+- Open `output/report.html` for visual dashboard
+
 ## Data Format
 
-CSV with columns:
-- **ID**: Auto-generated key
-- **Event Date**: Timestamp (YYYY-MM-DD HH:MM:SS)
-- **User ID**: Unique user identifier  
-- **Thread ID**: Session identifier
-- **Message**: JSON with `{"role": "human|ai", "content": "text"}`
+Your CSV needs these columns:
 
-## Metrics Calculated
+| Column | Example |
+|--------|---------|
+| ID | 1 |
+| Event Date | 2024-01-01 10:00:00 |
+| User ID | user001 |
+| Thread ID | thread001 |  
+| Message | {"role": "human", "content": "Hello"} |
 
-- Daily Active Users (DAU)
-- Monthly Active Users (MAU)
-- Session Duration
-- Session Frequency  
-- Queries per Session
-- Feature Usage
-- Retention Rate (1, 7, 30 days)
-- Churn Rate
+## Files
 
-## Output
+- `data_processor.py` - Cleans and processes raw data
+- `metrics_calculator.py` - Calculates engagement metrics  
+- `html_generator.py` - Creates HTML dashboard
+- `main.py` - Main script to run everything
+- `sample_data.csv` - Example data to test with
 
-- `output/executive_summary.html` - Main report
-- `output/metrics_summary.csv` - Data export
-- `output/charts/` - Visualizations
+## Example Output
 
-## Usage
+```
+🚀 Starting User Engagement Analysis...
+📊 Processing data...
+✅ Processed 20 interactions from 5 users
+📈 Calculating metrics...
+📋 Generating reports...
 
-```bash
-python main.py --input your_data.csv --output results/
+🎉 Analysis Complete!
+📊 Key Results:
+   Daily Active Users: 2.0
+   Monthly Active Users: 5.0
+   Avg Session Duration: 0.6 minutes
+   Churn Rate: 0.0%
+
+🎯 Feature Usage:
+   help: 5 uses
+   search: 4 uses
+   analysis: 4 uses
+
+📈 Retention Rates:
+   1_day: 40.0%
+   7_day: 0.0%
+   30_day: 0.0%
 ```
 
-Simple POC - modify `config.py` to customize settings.
+That's it! Simple and effective user engagement analysis.

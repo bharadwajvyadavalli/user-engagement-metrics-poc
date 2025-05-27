@@ -1,0 +1,21 @@
+# requirements.txt
+pandas>=1.5.0
+
+# Files needed:
+# - data_processor.py (processes CSV data)
+# - metrics_calculator.py (calculates metrics)
+# - html_generator.py (creates HTML report)
+# - main.py (main script)
+# - sample_data.csv (test data)
+
+# config.py (optional - customize feature keywords)
+FEATURE_KEYWORDS = {
+    "search": ["search", "find", "lookup"],
+    "analysis": ["analyze", "analysis", "report"],
+    "export": ["export", "download", "save"],
+    "chat": ["chat", "conversation", "talk"],
+    "help": ["help", "support", "assistance"]
+}
+
+RETENTION_PERIODS = [1, 7, 30]  # days
+CHURN_THRESHOLD_DAYS = 30
