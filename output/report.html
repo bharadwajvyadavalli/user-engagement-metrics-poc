@@ -2,701 +2,587 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>User Engagement Dashboard</title>
+    <title>User Engagement Analytics Dashboard</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; color: #2c3e50; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                   color: white; padding: 40px; border-radius: 12px; margin-bottom: 30px; 
-                   box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
-        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
-        .header p { opacity: 0.9; font-size: 1.1em; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f0f23;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
         
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-                        gap: 25px; margin-bottom: 40px; }
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
         
-        .metric-card { background: white; border-radius: 12px; padding: 25px; 
-                       box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e3e8ee;
-                       transition: transform 0.2s ease; }
-        .metric-card:hover { transform: translateY(-2px); }
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
         
-        .card-header { display: flex; align-items: center; margin-bottom: 20px; }
-        .card-icon { font-size: 1.5em; margin-right: 10px; }
-        .card-title { font-size: 1.2em; font-weight: 600; color: #2c3e50; }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
         
-        .metric-value { font-size: 2.2em; font-weight: bold; color: #3498db; margin: 10px 0; }
-        .metric-label { color: #7f8c8d; font-size: 0.9em; margin-bottom: 8px; }
-        .metric-item { display: flex; justify-content: space-between; padding: 8px 0; 
-                       border-bottom: 1px solid #ecf0f1; }
-        .metric-item:last-child { border-bottom: none; }
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         
-        .features-section { background: white; border-radius: 12px; padding: 25px; 
-                            box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 30px; }
-        .feature-tags { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 15px; }
-        .feature-tag { background: #e8f4f8; color: #2c3e50; padding: 8px 16px; 
-                       border-radius: 20px; font-weight: 500; border: 1px solid #bee5eb; }
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: #e0e0e0;
+        }
         
-        .activity-table { background: white; border-radius: 12px; padding: 25px; 
-                          box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { background: #f8f9fa; padding: 15px; text-align: left; font-weight: 600; 
-             border-bottom: 2px solid #dee2e6; }
-        td { padding: 12px 15px; border-bottom: 1px solid #f1f3f4; }
-        tr:hover { background: #f8f9fa; }
+        /* Executive Summary */
+        .executive-summary {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #2a2a3e;
+        }
         
-        .footer { text-align: center; margin-top: 40px; padding: 20px; 
-                  background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        .footer p { color: #7f8c8d; }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
         
-        .success { color: #27ae60; }
-        .warning { color: #f39c12; }
-        .danger { color: #e74c3c; }
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .summary-label {
+            color: #888;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid #2a2a3e;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+        }
+        
+        .metric-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .metric-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+        
+        .metric-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #2a2a3e;
+        }
+        
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        /* Charts */
+        .chart-container {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #2a2a3e;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+        
+        /* Feature Tags */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .feature-card {
+            background: #242438;
+            border: 1px solid #3a3a4e;
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            background: #2a2a3e;
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+        
+        .feature-name {
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 0.5rem;
+            text-transform: capitalize;
+        }
+        
+        .feature-count {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .feature-label {
+            color: #888;
+            font-size: 0.8rem;
+        }
+        
+        /* Status Indicators */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-excellent {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .status-good {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+        
+        .status-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        
+        .status-poor {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard { padding: 1rem; }
+            .header { padding: 2rem; }
+            .header h1 { font-size: 2rem; }
+            .metrics-grid { grid-template-columns: 1fr; }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .metric-card, .chart-container {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        /* Print Styles */
+        @media print {
+            body { background: white; color: black; }
+            .metric-card, .chart-container { 
+                background: white; 
+                border: 1px solid #ddd;
+                break-inside: avoid;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="dashboard">
+        <!-- Header -->
         <div class="header">
-            <h1>📊 User Engagement Dashboard</h1>
-            <p>Generated on May 26, 2025 at 07:53 PM</p>
+            <h1>User Engagement Analytics</h1>
+            <p class="subtitle">Generated on June 06, 2025 at 09:25 PM</p>
         </div>
         
+        <!-- Executive Summary -->
+        <div class="executive-summary">
+            <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">Executive Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-value">94</div>
+                    <div class="summary-label">Daily Active Users</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">99%</div>
+                    <div class="summary-label">7-Day Retention</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">8.7m</div>
+                    <div class="summary-label">Avg Session Time</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value">27,620</div>
+                    <div class="summary-label">Total Interactions</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Metrics Cards -->
         <div class="metrics-grid">
+            <!-- User Activity -->
             <div class="metric-card">
-                <div class="card-header">
-                    <span class="card-icon">👥</span>
-                    <span class="card-title">User Activity</span>
+                <div class="metric-header">
+                    <div class="metric-icon">👥</div>
+                    <div class="metric-title">User Activity</div>
                 </div>
-                <div class="metric-item">
-                    <span class="metric-label">Daily Active Users</span>
-                    <span class="metric-value">92.1</span>
-                </div>
-                <div class="metric-item">
-                    <span class="metric-label">Monthly Active Users</span>
-                    <span class="metric-value">347.0</span>
+                <div class="metric-content">
+                    <div class="metric-row">
+                        <span class="metric-label">Daily Active Users</span>
+                        <span class="metric-value">95</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Monthly Active Users</span>
+                        <span class="metric-value">408</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Growth Trend</span>
+                        <span class="status status-good">
+                            Good
+                        </span>
+                    </div>
                 </div>
             </div>
             
+            <!-- Session Metrics -->
             <div class="metric-card">
-                <div class="card-header">
-                    <span class="card-icon">⏱️</span>
-                    <span class="card-title">Session Metrics</span>
+                <div class="metric-header">
+                    <div class="metric-icon">⏱️</div>
+                    <div class="metric-title">Session Analytics</div>
                 </div>
-                <div class="metric-item">
-                    <span class="metric-label">Avg Duration</span>
-                    <span class="metric-value">8.2<small style="font-size:0.5em"> min</small></span>
-                </div>
-                <div class="metric-item">
-                    <span class="metric-label">Sessions per User</span>
-                    <span class="metric-value">25.5</span>
-                </div>
-                <div class="metric-item">
-                    <span class="metric-label">Queries per Session</span>
-                    <span class="metric-value">4.3</span>
+                <div class="metric-content">
+                    <div class="metric-row">
+                        <span class="metric-label">Avg Duration</span>
+                        <span class="metric-value">8.7m</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Sessions per User</span>
+                        <span class="metric-value">26.6</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Queries per Session</span>
+                        <span class="metric-value">4.6</span>
+                    </div>
                 </div>
             </div>
             
+            <!-- Retention & Health -->
             <div class="metric-card">
-                <div class="card-header">
-                    <span class="card-icon">📈</span>
-                    <span class="card-title">Retention & Health</span>
+                <div class="metric-header">
+                    <div class="metric-icon">📈</div>
+                    <div class="metric-title">Retention & Health</div>
                 </div>
-                <div class="metric-item">
-                    <span class="metric-label">1-day Retention</span>
-                    <span class="metric-value success">100%</span>
-                </div>
-                <div class="metric-item">
-                    <span class="metric-label">7-day Retention</span>
-                    <span class="metric-value success">99%</span>
-                </div>
-                <div class="metric-item">
-                    <span class="metric-label">Churn Rate</span>
-                    <span class="metric-value success">0%</span>
+                <div class="metric-content">
+                    <div class="metric-row">
+                        <span class="metric-label">1-Day Retention</span>
+                        <span class="metric-value">100%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">7-Day Retention</span>
+                        <span class="metric-value">99%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Churn Rate</span>
+                        <span class="status status-excellent">
+                            0%
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div class="features-section">
-            <div class="card-header">
-                <span class="card-icon">🎯</span>
-                <span class="card-title">Feature Usage Analytics</span>
+        <!-- Daily Active Users Chart -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3 class="chart-title">Daily Active Users Trend (Last 30 Days)</h3>
             </div>
-            <div class="feature-tags">
-<div class="feature-tag"><strong>Analysis</strong> • 11172 uses</div><div class="feature-tag"><strong>Export</strong> • 6702 uses</div><div class="feature-tag"><strong>Search</strong> • 4522 uses</div><div class="feature-tag"><strong>Help</strong> • 2318 uses</div><div class="feature-tag"><strong>Chat</strong> • 0 uses</div>
+            <div class="chart-wrapper">
+                <canvas id="dauChart"></canvas>
             </div>
         </div>
         
-        <div class="activity-table">
-            <div class="card-header">
-                <span class="card-icon">📊</span>
-                <span class="card-title">Daily User Activity</span>
+        <!-- Feature Usage -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3 class="chart-title">Feature Usage Analytics</h3>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Active Users</th>
-                        <th>Activity Level</th>
-                    </tr>
-                </thead>
-                <tbody>
-
-                    <tr>
-                        <td><strong>2025-02-25</strong></td>
-                        <td>5</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-02-26</strong></td>
-                        <td>15</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-02-27</strong></td>
-                        <td>16</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-02-28</strong></td>
-                        <td>33</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-01</strong></td>
-                        <td>13</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-02</strong></td>
-                        <td>20</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-03</strong></td>
-                        <td>48</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-04</strong></td>
-                        <td>63</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-05</strong></td>
-                        <td>57</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-06</strong></td>
-                        <td>61</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-07</strong></td>
-                        <td>70</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-08</strong></td>
-                        <td>18</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-09</strong></td>
-                        <td>20</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-10</strong></td>
-                        <td>81</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-11</strong></td>
-                        <td>78</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-12</strong></td>
-                        <td>99</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-13</strong></td>
-                        <td>99</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-14</strong></td>
-                        <td>92</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-15</strong></td>
-                        <td>36</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-16</strong></td>
-                        <td>26</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-17</strong></td>
-                        <td>111</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-18</strong></td>
-                        <td>91</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-19</strong></td>
-                        <td>123</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-20</strong></td>
-                        <td>113</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-21</strong></td>
-                        <td>123</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-22</strong></td>
-                        <td>33</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-23</strong></td>
-                        <td>25</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-24</strong></td>
-                        <td>121</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-25</strong></td>
-                        <td>127</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-26</strong></td>
-                        <td>132</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-27</strong></td>
-                        <td>132</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-28</strong></td>
-                        <td>138</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-29</strong></td>
-                        <td>30</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-30</strong></td>
-                        <td>33</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-03-31</strong></td>
-                        <td>129</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-01</strong></td>
-                        <td>129</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-02</strong></td>
-                        <td>138</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-03</strong></td>
-                        <td>150</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-04</strong></td>
-                        <td>139</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-05</strong></td>
-                        <td>37</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-06</strong></td>
-                        <td>35</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-07</strong></td>
-                        <td>124</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-08</strong></td>
-                        <td>151</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-09</strong></td>
-                        <td>124</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-10</strong></td>
-                        <td>130</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-11</strong></td>
-                        <td>135</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-12</strong></td>
-                        <td>46</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-13</strong></td>
-                        <td>41</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-14</strong></td>
-                        <td>145</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-15</strong></td>
-                        <td>129</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-16</strong></td>
-                        <td>154</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-17</strong></td>
-                        <td>150</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-18</strong></td>
-                        <td>139</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-19</strong></td>
-                        <td>35</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-20</strong></td>
-                        <td>47</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-21</strong></td>
-                        <td>117</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-22</strong></td>
-                        <td>143</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-23</strong></td>
-                        <td>126</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-24</strong></td>
-                        <td>129</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-25</strong></td>
-                        <td>159</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-26</strong></td>
-                        <td>24</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-27</strong></td>
-                        <td>40</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-28</strong></td>
-                        <td>120</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-29</strong></td>
-                        <td>149</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-04-30</strong></td>
-                        <td>135</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-01</strong></td>
-                        <td>141</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-02</strong></td>
-                        <td>124</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-03</strong></td>
-                        <td>49</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-04</strong></td>
-                        <td>37</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-05</strong></td>
-                        <td>141</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-06</strong></td>
-                        <td>140</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-07</strong></td>
-                        <td>143</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-08</strong></td>
-                        <td>136</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-09</strong></td>
-                        <td>134</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-10</strong></td>
-                        <td>31</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-11</strong></td>
-                        <td>42</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-12</strong></td>
-                        <td>126</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-13</strong></td>
-                        <td>131</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-14</strong></td>
-                        <td>125</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-15</strong></td>
-                        <td>125</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-16</strong></td>
-                        <td>125</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-17</strong></td>
-                        <td>53</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-18</strong></td>
-                        <td>37</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-19</strong></td>
-                        <td>115</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-20</strong></td>
-                        <td>144</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-21</strong></td>
-                        <td>123</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-22</strong></td>
-                        <td>128</td>
-                        <td><span class="success">High</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-23</strong></td>
-                        <td>124</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-24</strong></td>
-                        <td>32</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-25</strong></td>
-                        <td>36</td>
-                        <td><span class="danger">Low</span></td>
-                    </tr>
-
-                    <tr>
-                        <td><strong>2025-05-26</strong></td>
-                        <td>107</td>
-                        <td><span class="warning">Medium</span></td>
-                    </tr>
-
-                </tbody>
-            </table>
+            <div class="features-grid">
+                
+                <div class="feature-card">
+                    <div class="feature-name">analysis</div>
+                    <div class="feature-count">12,512</div>
+                    <div class="feature-label">interactions</div>
+                </div>
+            
+                <div class="feature-card">
+                    <div class="feature-name">export</div>
+                    <div class="feature-count">7,497</div>
+                    <div class="feature-label">interactions</div>
+                </div>
+            
+                <div class="feature-card">
+                    <div class="feature-name">search</div>
+                    <div class="feature-count">5,003</div>
+                    <div class="feature-label">interactions</div>
+                </div>
+            
+                <div class="feature-card">
+                    <div class="feature-name">help</div>
+                    <div class="feature-count">2,608</div>
+                    <div class="feature-label">interactions</div>
+                </div>
+            
+                <div class="feature-card">
+                    <div class="feature-name">chat</div>
+                    <div class="feature-count">0</div>
+                    <div class="feature-label">interactions</div>
+                </div>
+            
+            </div>
+            <div class="chart-wrapper" style="margin-top: 2rem;">
+                <canvas id="featureChart"></canvas>
+            </div>
         </div>
         
+        <!-- Footer -->
         <div class="footer">
-            <p><strong>🚀 User Engagement Analytics</strong> • Professional insights for data-driven decisions</p>
+            <p>Powered by User Engagement Analytics Platform • 2025</p>
         </div>
     </div>
+    
+    <script>
+        // Chart.js configuration
+        Chart.defaults.color = '#888';
+        Chart.defaults.borderColor = '#2a2a3e';
+        
+        // Daily Active Users Chart
+        const dauCtx = document.getElementById('dauChart').getContext('2d');
+        new Chart(dauCtx, {
+            type: 'line',
+            data: {
+                labels: ["2025-05-09", "2025-05-10", "2025-05-11", "2025-05-12", "2025-05-13", "2025-05-14", "2025-05-15", "2025-05-16", "2025-05-17", "2025-05-18", "2025-05-19", "2025-05-20", "2025-05-21", "2025-05-22", "2025-05-23", "2025-05-24", "2025-05-25", "2025-05-26", "2025-05-27", "2025-05-28", "2025-05-29", "2025-05-30", "2025-05-31", "2025-06-01", "2025-06-02", "2025-06-03", "2025-06-04", "2025-06-05", "2025-06-06", "2025-06-07"],
+                datasets: [{
+                    label: 'Daily Active Users',
+                    data: [118, 46, 52, 149, 146, 144, 134, 129, 39, 48, 149, 109, 127, 140, 149, 36, 46, 107, 114, 116, 125, 120, 33, 30, 117, 121, 118, 123, 126, 2],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#667eea',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1a1a2e',
+                        titleColor: '#e0e0e0',
+                        bodyColor: '#e0e0e0',
+                        borderColor: '#667eea',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: '#2a2a3e' },
+                        ticks: { maxRotation: 45, minRotation: 45 }
+                    },
+                    y: {
+                        grid: { color: '#2a2a3e' },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Feature Usage Chart
+        const featureCtx = document.getElementById('featureChart').getContext('2d');
+        new Chart(featureCtx, {
+            type: 'bar',
+            data: {
+                labels: ["Search", "Analysis", "Export", "Chat", "Help"],
+                datasets: [{
+                    label: 'Usage Count',
+                    data: [5003, 12512, 7497, 0, 2608],
+                    backgroundColor: [
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(118, 75, 162, 0.8)',
+                        'rgba(129, 140, 248, 0.8)',
+                        'rgba(139, 92, 246, 0.8)',
+                        'rgba(124, 58, 237, 0.8)'
+                    ],
+                    borderWidth: 0,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1a1a2e',
+                        titleColor: '#e0e0e0',
+                        bodyColor: '#e0e0e0',
+                        borderColor: '#667eea',
+                        borderWidth: 1,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: {
+                        grid: { color: '#2a2a3e' },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
