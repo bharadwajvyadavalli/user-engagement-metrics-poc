@@ -360,7 +360,7 @@ class HTMLGenerator:
             <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">Executive Summary</h2>
             <div class="summary-grid">
                 <div class="summary-item">
-                    <div class="summary-value">{int(metrics['avg_dau'])}</div>
+                    <div class="summary-value">{metrics['avg_dau']:.0f}</div>
                     <div class="summary-label">Daily Active Users</div>
                 </div>
                 <div class="summary-item">
